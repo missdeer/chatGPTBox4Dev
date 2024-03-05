@@ -100,7 +100,7 @@ export const config = {
       includeLanguagePrefix: true,
     }),
   },
-  divide: {
+  optimize: {
     icon: <CardList />,
     label: 'Optimize',
     genPrompt: createGenPrompt({
