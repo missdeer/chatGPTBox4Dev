@@ -76,43 +76,42 @@ export const config = {
       enableBidirectional: true,
     }),
   },
-  summary: {
+  addtests: {
     icon: <CardHeading />,
-    label: 'Summary',
+    label: 'Add Tests',
     genPrompt: createGenPrompt({
-      message: 'Summarize the following as concisely as possible',
+      message: "Add tests to the following code, let's think step by step",
       includeLanguagePrefix: true,
     }),
   },
-  polish: {
+  codereview: {
     icon: <Palette />,
-    label: 'Polish',
+    label: 'Code Review',
     genPrompt: createGenPrompt({
       message:
-        'Check the following content for possible diction and grammar problems, and polish it carefully',
+        "Review the following code for possible bugs and optimize it, let's think step by step",
     }),
   },
-  sentiment: {
+  findvulnerabilities: {
     icon: <EmojiSmile />,
-    label: 'Sentiment Analysis',
+    label: 'Find Vulnerabilities',
     genPrompt: createGenPrompt({
-      message:
-        'Analyze the sentiments expressed in the following content and make a brief summary of the sentiments',
+      message: "Find vulnerabilities in the following code, let's think step by step",
       includeLanguagePrefix: true,
     }),
   },
   divide: {
     icon: <CardList />,
-    label: 'Divide Paragraphs',
+    label: 'Optimize',
     genPrompt: createGenPrompt({
-      message: 'Divide the following into paragraphs that are easy to read and understand',
+      message: "Optimize the following code, let's think step by step",
     }),
   },
   code: {
     icon: <Braces />,
     label: 'Code Explain',
     genPrompt: createGenPrompt({
-      message: 'Explain the following code',
+      message: "Explain the following code, let's think step by step",
       includeLanguagePrefix: true,
     }),
   },

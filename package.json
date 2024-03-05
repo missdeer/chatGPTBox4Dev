@@ -1,5 +1,5 @@
 {
-  "name": "chatgptbox",
+  "name": "chatgptbox4dev",
   "scripts": {
     "build": "node build.mjs --production",
     "build:safari": "bash ./safari/build.sh",
@@ -31,7 +31,7 @@
     "gpt-3-encoder": "^1.1.4",
     "graphql": "^16.6.0",
     "i18next": "^22.4.15",
-    "jsonwebtoken": "8.5.1",
+    "jsonwebtoken": "^9.0.2",
     "katex": "^0.16.6",
     "lodash-es": "^4.17.21",
     "md5": "^2.3.0",

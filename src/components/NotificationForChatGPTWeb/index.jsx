@@ -29,7 +29,7 @@ const NotificationForChatGPTWeb = () => {
           gap: '4px',
         }}
       >
-        <div>{t('Please keep this tab open. You can now use the web mode of ChatGPTBox')}</div>
+        <div>{t('Please keep this tab open. You can now use the web mode of ChatGPTBox4Dev')}</div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
           <button
             style={buttonStyle}

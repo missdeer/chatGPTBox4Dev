@@ -33,7 +33,7 @@ function Footer({ currentVersion, latestVersion }) {
           <>
             ({`${t('Latest')}: `}
             <a
-              href={'https://github.com/josStorer/chatGPTBox/releases/tag/v' + latestVersion}
+              href={'https://github.com/missdeer/chatGPTBox4Dev/releases/tag/v' + latestVersion}
               target="_blank"
               rel="nofollow noopener noreferrer"
             >
@@ -45,7 +45,7 @@ function Footer({ currentVersion, latestVersion }) {
       </div>
       <div>
         <a
-          href="https://github.com/josStorer/chatGPTBox"
+          href="https://github.com/missdeer/chatGPTBox4Dev"
           target="_blank"
           rel="nofollow noopener noreferrer"
         >
@@ -76,10 +76,11 @@ function Popup() {
     getUserConfig().then((config) => {
       setConfig(config)
       setCurrentVersion(Browser.runtime.getManifest().version.replace('v', ''))
-      fetch('https://api.github.com/repos/josstorer/chatGPTBox/releases/latest').then((response) =>
-        response.json().then((data) => {
-          setLatestVersion(data.tag_name.replace('v', ''))
-        }),
+      fetch('https://api.github.com/repos/missdeer/chatGPTBox4Dev/releases/latest').then(
+        (response) =>
+          response.json().then((data) => {
+            setLatestVersion(data.tag_name.replace('v', ''))
+          }),
       )
     })
   }, [])
