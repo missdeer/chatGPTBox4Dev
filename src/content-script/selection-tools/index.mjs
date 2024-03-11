@@ -90,6 +90,7 @@ export const config = {
     genPrompt: createGenPrompt({
       message:
         "Review the following code for possible bugs and optimize it, let's think step by step",
+      includeLanguagePrefix: true,
     }),
   },
   findvulnerabilities: {
@@ -105,6 +106,7 @@ export const config = {
     label: 'Optimize',
     genPrompt: createGenPrompt({
       message: "Optimize the following code, let's think step by step",
+      includeLanguagePrefix: true,
     }),
   },
   code: {
