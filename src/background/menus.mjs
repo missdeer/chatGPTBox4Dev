@@ -44,7 +44,7 @@ export function refreshMenu() {
     })
     Browser.contextMenus.create({
       id: menuId,
-      title: 'ChatGPTBox',
+      title: 'ChatGPTBox4Dev',
       contexts: ['all'],
     })
 
