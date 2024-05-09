@@ -1,7 +1,7 @@
 {
   "name": "ChatGPTBox4Dev",
   "description": "Integrating ChatGPT into your browser deeply, tools for developers are here",
-  "version": "2.5.3",
+  "version": "2.5.4",
   "manifest_version": 3,
   "icons": {
     "16": "logo.png",
@@ -10,6 +10,7 @@
     "128": "logo.png"
   },
   "host_permissions": [
+    "https://*.chatgpt.com/*",
     "https://*.openai.com/*",
     "https://*.bing.com/*",
     "https://*.poe.com/*",

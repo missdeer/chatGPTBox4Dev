@@ -7,6 +7,8 @@ import { pushRecord, setAbortController } from './shared.mjs'
 import Browser from 'webextension-polyfill'
 import { v4 as uuidv4 } from 'uuid'
 import { t } from 'i18next'
+import { sha3_512 } from 'js-sha3'
+import randomInt from 'random-int'
 
 async function request(token, method, path, data) {
   const apiUrl = (await getUserConfig()).customChatGptWebApiUrl
@@ -49,22 +51,22 @@ export async function getModels(token) {
   if (response.models) return response.models.map((m) => m.slug)
 }
 
-export async function getRequirementsToken(accessToken) {
+export async function getRequirements(accessToken) {
   const response = JSON.parse(
     (await request(accessToken, 'POST', '/sentinel/chat-requirements')).responseText,
   )
-  if (response.token) {
-    return response.token
+  if (response) {
+    return response
   }
 }
 
 export async function getArkoseToken(config) {
   if (!config.chatgptArkoseReqUrl)
     throw new Error(
-      t('Please login at https://chat.openai.com first') +
+      t('Please login at https://chatgpt.com first') +
         '\n\n' +
         t(
-          "Please keep https://chat.openai.com open and try again. If it still doesn't work, type some characters in the input box of chatgpt web page and try again.",
+          "Please keep https://chatgpt.com open and try again. If it still doesn't work, type some characters in the input box of chatgpt web page and try again.",
         ),
     )
   const arkoseToken = await fetch(
@@ -85,10 +87,42 @@ export async function getArkoseToken(config) {
       t('Failed to get arkose token.') +
         '\n\n' +
         t(
-          "Please keep https://chat.openai.com open and try again. If it still doesn't work, type some characters in the input box of chatgpt web page and try again.",
+          "Please keep https://chatgpt.com open and try again. If it still doesn't work, type some characters in the input box of chatgpt web page and try again.",
         ),
     )
   return arkoseToken
+}
+
+// https://github.com/tctien342/chatgpt-proxy/blob/9147a4345b34eece20681f257fd475a8a2c81171/src/openai.ts#L103
+function generateProofToken(seed, diff, userAgent) {
+  const cores = [8, 12, 16, 24]
+  const screens = [3000, 4000, 6000]
+
+  const core = cores[randomInt(0, cores.length)]
+  const screen = screens[randomInt(0, screens.length)]
+
+  const parseTime = new Date().toString()
+
+  const config = [core + screen, parseTime, 4294705152, 0, userAgent]
+
+  const diffLen = diff.length / 2
+
+  for (let i = 0; i < 100000; i++) {
+    config[3] = i
+    const jsonData = JSON.stringify(config)
+    // eslint-disable-next-line no-undef
+    const base = Buffer.from(jsonData).toString('base64')
+    const hashValue = sha3_512.create().update(seed + base)
+
+    if (hashValue.hex().substring(0, diffLen) <= diff) {
+      const result = 'gAAAAAB' + base
+      return result
+    }
+  }
+
+  // eslint-disable-next-line no-undef
+  const fallbackBase = Buffer.from(`"${seed}"`).toString('base64')
+  return 'gAAAAABwQ8Lk5FbGpA2NcR9dShT6gYjU7VxZ4D' + fallbackBase
 }
 
 export async function isNeedWebsocket(accessToken) {
@@ -127,8 +161,13 @@ export async function registerWebsocket(accessToken) {
   const response = JSON.parse(
     (await request(accessToken, 'POST', '/register-websocket')).responseText,
   )
+  let resolve
   if (response.wss_url) {
     websocket = new WebSocket(response.wss_url)
+    websocket.onopen = () => {
+      console.debug('global websocket opened')
+      resolve()
+    }
     websocket.onclose = () => {
       websocket = null
       expires_at = null
@@ -139,6 +178,7 @@ export async function registerWebsocket(accessToken) {
     }
     expires_at = new Date(response.expires_at)
   }
+  return new Promise((r) => (resolve = r))
 }
 
 /**
@@ -160,33 +200,43 @@ export async function generateAnswersWithChatgptWebApi(port, question, session, 
   )
 
   const config = await getUserConfig()
-  // eslint-disable-next-line no-unused-vars
-  const [models, requirementsToken, arkoseToken, useWebsocket] = await Promise.all([
-    getModels(accessToken).catch(cleanController), // don't throw error here
-    getRequirementsToken(accessToken),
-    getArkoseToken(config),
-    isNeedWebsocket(accessToken).catch(cleanController), // don't throw error here
-  ]).catch((e) => {
-    cleanController()
-    throw e
-  })
+  let arkoseError
+  const [models, requirements, arkoseToken, useWebsocket] = await Promise.all([
+    getModels(accessToken).catch(() => undefined),
+    getRequirements(accessToken).catch(() => undefined),
+    getArkoseToken(config).catch((e) => {
+      arkoseError = e
+    }),
+    isNeedWebsocket(accessToken).catch(() => undefined),
+  ])
   console.debug('models', models)
   const selectedModel = Models[session.modelName].value
   const usedModel =
     models && models.includes(selectedModel) ? selectedModel : Models[chatgptWebModelKeys[0]].value
   console.debug('usedModel', usedModel)
+  const needArkoseToken = requirements && requirements.arkose?.required
+  if (arkoseError && needArkoseToken) throw arkoseError
+
+  let proofToken
+  if (requirements?.proofofwork?.required) {
+    proofToken = generateProofToken(
+      requirements.proofofwork.seed,
+      requirements.proofofwork.difficulty,
+      navigator.userAgent,
+    )
+  }
 
   let cookie
   let oaiDeviceId
   if (Browser.cookies && Browser.cookies.getAll) {
-    cookie = (await Browser.cookies.getAll({ url: 'https://chat.openai.com/' }))
+    cookie = (await Browser.cookies.getAll({ url: 'https://chatgpt.com/' }))
       .map((cookie) => {
         return `${cookie.name}=${cookie.value}`
       })
       .join('; ')
     oaiDeviceId = (
       await Browser.cookies.get({
-        url: 'https://openai.com/',
+        url: 'https://chatgpt.com/',
         name: 'oai-did',
       })
     ).value
@@ -206,8 +256,9 @@ export async function generateAnswersWithChatgptWebApi(port, question, session, 
       'Content-Type': 'application/json',
       Authorization: `Bearer ${accessToken}`,
       ...(cookie && { Cookie: cookie }),
-      'Openai-Sentinel-Arkose-Token': arkoseToken || '',
-      'Openai-Sentinel-Chat-Requirements-Token': requirementsToken || '',
+      ...(needArkoseToken && { 'Openai-Sentinel-Arkose-Token': arkoseToken }),
+      ...(requirements && { 'Openai-Sentinel-Chat-Requirements-Token': requirements.token }),
+      ...(proofToken && { 'Openai-Sentinel-Proof-Token': proofToken }),
       'Oai-Device-Id': oaiDeviceId,
       'Oai-Language': 'en-US',
     },

@@ -7,6 +7,8 @@ on:
 permissions:
   id-token: "write"
   contents: "write"
+env:
+  GH_TOKEN: ${{ github.token }}
 
 jobs:
   build_and_release:
@@ -19,14 +21,14 @@ jobs:
           ref: master
 
       - name: Update manifest.json version
-        uses: jossef/action-set-json-field@v2.1
+        uses: jossef/action-set-json-field@v2.2
         with:
           file: src/manifest.json
           field: version
           value: ${{ env.VERSION }}
 
       - name: Update manifest.v2.json version
-        uses: jossef/action-set-json-field@v2.1
+        uses: jossef/action-set-json-field@v2.2
         with:
           file: src/manifest.v2.json
           field: version
@@ -39,6 +41,9 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git commit -am "release v${{ env.VERSION }}"
           git push
+
+      - run: |
+          gh release create ${{github.ref_name}} -d -F CURRENT_CHANGE.md -t ${{github.ref_name}}
 
       - uses: actions/setup-node@v4
         with:
