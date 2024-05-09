@@ -60,12 +60,13 @@ jobs:
       - run: sed -i '' "s/0.0.0/${{ env.VERSION }}/g" safari/project.patch
       - run: npm run build:safari
 
-      - run: |
-          gh release upload ${{github.ref_name}} build/chromium.zip
-          gh release upload ${{github.ref_name}} build/firefox.zip
-          gh release upload ${{github.ref_name}} build/safari.dmg
-          gh release upload ${{github.ref_name}} build/chromium-without-katex-and-tiktoken.zip
-          gh release upload ${{github.ref_name}} build/firefox-without-katex-and-tiktoken.zip
-
-      - run: |
-          gh release edit ${{github.ref_name}} --draft=false
+      - uses: marvinpinto/action-automatic-releases@v1.2.1
+        with:
+          repo_token: "${{ secrets.GH_TOKEN }}"
+          prerelease: false
+          files: |
+            build/chromium.zip
+            build/firefox.zip
+            build/safari.dmg
+            build/chromium-without-katex-and-tiktoken.zip
+            build/firefox-without-katex-and-tiktoken.zip
