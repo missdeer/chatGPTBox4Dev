@@ -2,7 +2,7 @@
 +++ b/src/manifest.v2.json
 @@ -1,5 +1,5 @@
  {
--  "name": "ChatGPTBox",
+-  "name": "ChatGPTBox4Dev",
 +  "name": "Fission - ChatBox",
    "description": "Integrating ChatGPT into your browser deeply, everything you need is here",
    "version": "0.0.0",
