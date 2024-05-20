@@ -23,6 +23,7 @@ export const ModelMode = {
 
 export const chatgptWebModelKeys = [
   'chatgptFree35',
+  'chatgptFree4o',
   'chatgptPlus4',
   'chatgptFree35Mobile',
   'chatgptPlus4Browsing',
@@ -38,6 +39,7 @@ export const chatgptApiModelKeys = [
   'chatgptApi35_16k',
   'chatgptApi35_1106',
   'chatgptApi35_0125',
+  'chatgptApi4o_128k',
   'chatgptApi4_8k',
   'chatgptApi4_8k_0613',
   'chatgptApi4_32k',
@@ -87,12 +89,15 @@ export const moonshotApiModelKeys = ['moonshot_v1_8k', 'moonshot_v1_32k', 'moons
 export const Models = {
   chatgptFree35: { value: 'text-davinci-002-render-sha', desc: 'ChatGPT (Web)' },
 
+  chatgptFree4o: { value: 'gpt-4o', desc: 'ChatGPT (Web, GPT-4o)' },
+
   chatgptPlus4: { value: 'gpt-4', desc: 'ChatGPT (Web, GPT-4 All in one)' },
   chatgptPlus4Browsing: { value: 'gpt-4-gizmo', desc: 'ChatGPT (Web, GPT-4)' },
 
   chatgptApi35: { value: 'gpt-3.5-turbo', desc: 'ChatGPT (GPT-3.5-turbo)' },
   chatgptApi35_16k: { value: 'gpt-3.5-turbo-16k', desc: 'ChatGPT (GPT-3.5-turbo-16k)' },
 
+  chatgptApi4o_128k: { value: 'gpt-4o', desc: 'ChatGPT (GPT-4o)' },
   chatgptApi4_8k: { value: 'gpt-4', desc: 'ChatGPT (GPT-4-8k)' },
   chatgptApi4_32k: { value: 'gpt-4-32k', desc: 'ChatGPT (GPT-4-32k)' },
   chatgptApi4_128k: {
@@ -250,9 +255,9 @@ export const defaultConfig = {
   alwaysCreateNewConversationWindow: false,
   activeApiModes: [
     'chatgptFree35',
+    'chatgptFree4o',
     'chatgptPlus4',
     'chatgptApi35',
-    'chatgptApi4_8k',
     'chatgptApi4_128k',
     'claude2WebFree',
     'bingFree4',
